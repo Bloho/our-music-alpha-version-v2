@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .player {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #282828;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .song-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .song-list li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .song-list li:hover {
+            background-color: #1db954;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #1db954;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        .now-playing {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="player">
+        <h2>My Playlist</h2>
+        <ul class="song-list" id="songList">
+            <!-- Song list will be populated by JavaScript -->
+        </ul>
+        <div class="now-playing" id="nowPlaying">
+            Now Playing: None
+        </div>
+        <div class="controls">
+            <button id="prevBtn">Previous</button>
+            <button id="playBtn">Play</button>
+            <button id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        const songs = [
+            { title: "In My Room", artist: "Chance Peña", src: "/audio/inmyroom.mp3" },
+            { title: "Song 2", artist: "Artist 2", src: "/audio/song2.mp3" },
+            { title: "Song 3", artist: "Artist 3", src: "/audio/song3.mp3" }
+        ];
+
+        let currentSongIndex = 0;
+        let isPlaying = false;
+
+        const audioPlayer = document.getElementById('audioPlayer');
+        const songList = document.getElementById('songList');
+        const nowPlaying = document.getElementById('nowPlaying');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function loadSongs() {
+            songs.forEach((song, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${song.title} - ${song.artist}`;
+                li.onclick = () => playSong(index);
+                songList.appendChild(li);
+            });
+        }
+
+        function playSong(index) {
+            currentSongIndex = index;
+            audioPlayer.src = songs[currentSongIndex].src;
+            audioPlayer.play();
+            isPlaying = true;
+            updateNowPlaying();
+            updatePlayButton();
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                audioPlayer.pause();
+            } else {
+                audioPlayer.play();
+            }
+            isPlaying = !isPlaying;
+            updatePlayButton();
+        }
+
+        function playNext() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            playSong(currentSongIndex);
+        }
+
+        function playPrevious() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            playSong(currentSongIndex);
+        }
+
+        function updateNowPlaying() {
+            const currentSong = songs[currentSongIndex];
+            nowPlaying.textContent = `Now Playing: ${currentSong.title} - ${currentSong.artist}`;
+        }
+
+        function updatePlayButton() {
+            playBtn.textContent = isPlaying ? 'Pause' : 'Play';
+        }
+
+        loadSongs();
+        playBtn.onclick = togglePlay;
+        nextBtn.onclick = playNext;
+        prevBtn.onclick = playPrevious;
+    </script>
+</body>
+</html>
